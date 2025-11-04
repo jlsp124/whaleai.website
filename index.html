@@ -16,10 +16,11 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Nav (glassy, compact like Metalab) -->
+  <!-- Nav -->
   <header class="nav">
     <a class="brand" href="#top">
-      <img class="logo" src="assets/whale.svg" alt="" />
+      <!-- If assets/logo.png exists, JS will swap it in automatically -->
+      <img class="logo" src="assets/whale.svg" alt="Whale AI" />
       <span>Whale AI</span>
     </a>
     <nav class="links">
@@ -31,18 +32,18 @@
     </nav>
   </header>
 
-  <!-- Hero (big type, edge-to-edge gradients) -->
+  <!-- Hero -->
   <section id="top" class="hero hero--metalab">
     <div class="hero-mesh" aria-hidden="true"></div>
-    <div class="hero-inner">
-      <p class="eyebrow">Solana · Copy-trading · AI scalp</p>
-      <h1 class="display">Best way to trade on Solana</h1>
-      <p class="lede">A Telegram bot to <strong>copy-trade whales</strong> or <strong>scalp with AI</strong>. Built-in safety checks. Try strategies in <strong>Simulate</strong> before going live.</p>
-      <div class="cta-row">
+    <div class="container hero-inner">
+      <p class="eyebrow center">Solana • Copy-trading • AI scalp</p>
+      <h1 class="display center">Best way to trade on Solana</h1>
+      <p class="lede center">A Telegram bot to <strong>copy-trade whales</strong> or <strong>scalp with AI</strong>. Built-in safety checks. Test strategies in <strong>Simulate</strong> before going live.</p>
+      <div class="cta-row center">
         <a class="btn btn-primary btn-lg" href="https://t.me/WhaleAiTrading_bot" target="_blank" rel="noopener">Launch on Telegram</a>
         <a class="btn btn-ghost btn-lg" href="#plans">View plans</a>
       </div>
-      <ul class="pills">
+      <ul class="pills center">
         <li>Copy top wallets</li>
         <li>AI scalp signals</li>
         <li>Rug & safety checks</li>
@@ -51,52 +52,74 @@
     </div>
   </section>
 
-  <!-- Slim partner chip (Metalab-style badge) -->
+  <!-- Showcase (drop images into /assets; hides if missing) -->
+  <section id="showcase" class="section section--tight">
+    <div class="container">
+      <div class="media">
+        <picture>
+          <source srcset="assets/landingpage.webp" type="image/webp" />
+          <img data-hide-if-missing class="illustration" src="assets/landingpage.png" alt="Whale AI landing" loading="lazy" />
+        </picture>
+      </div>
+      <div class="media media--pair">
+        <picture>
+          <source srcset="assets/dashboard.webp" type="image/webp" />
+          <img data-hide-if-missing class="illustration" src="assets/dashboard.png" alt="Whale AI dashboard" loading="lazy" />
+        </picture>
+        <picture>
+          <source srcset="assets/mobile.webp" type="image/webp" />
+          <img data-hide-if-missing class="illustration" src="assets/mobile.png" alt="Whale AI mobile" loading="lazy" />
+        </picture>
+      </div>
+    </div>
+  </section>
+
+  <!-- Partner chip -->
   <section class="integrations">
     <div class="chip chip--glow">Powered by <strong>solanatracker.io</strong></div>
   </section>
 
-  <!-- Feature tiles (clean cards, subtle borders) -->
-  <section id="features" class="section section--tight">
-    <div class="section-head">
+  <!-- Features -->
+  <section id="features" class="section">
+    <div class="container section-head center">
       <p class="eyebrow">Capabilities</p>
       <h2>Everything you need to trade smarter</h2>
     </div>
-    <div class="grid features-grid">
-      <article class="card">
+    <div class="container grid features-grid">
+      <article class="card center">
         <h3>Copy-trade whales</h3>
         <p>Mirror entries/exits from proven wallets in real time with smart routing.</p>
       </article>
-      <article class="card">
+      <article class="card center">
         <h3>AI scalp mode</h3>
         <p>Momentum reads, TP/SL templates, and quick exits — explained simply.</p>
       </article>
-      <article class="card">
+      <article class="card center">
         <h3>Safety checks</h3>
         <p>Rug/scam screens before buys, alerts if risk signals change.</p>
       </article>
-      <article class="card">
+      <article class="card center">
         <h3>Simulate first</h3>
         <p>Backtest or paper-trade your setup before risking SOL.</p>
       </article>
-      <article class="card">
+      <article class="card center">
         <h3>Live PnL & portfolio</h3>
         <p>Track performance, export CSV, and keep it non-custodial.</p>
       </article>
-      <article class="card">
+      <article class="card center">
         <h3>Simple Telegram UX</h3>
         <p>Add/import wallet, pick strategy, track profits — all in chat.</p>
       </article>
     </div>
   </section>
 
-  <!-- How (minimal, Metalab spacing) -->
+  <!-- How -->
   <section id="how" class="section">
-    <div class="section-head">
+    <div class="container section-head center">
       <p class="eyebrow">Flow</p>
       <h2>How it works</h2>
     </div>
-    <ol class="steps">
+    <ol class="container steps">
       <li>
         <div class="step-badge">1</div>
         <div>
@@ -131,14 +154,14 @@
     </div>
   </section>
 
-  <!-- Plans (Apple/Metalab style cards) -->
+  <!-- Plans -->
   <section id="plans" class="section">
-    <div class="section-head">
+    <div class="container section-head center">
       <p class="eyebrow">Pricing</p>
       <h2>Pick your plan</h2>
     </div>
-    <div class="grid plans-grid">
-      <article class="card plan">
+    <div class="container grid plans-grid">
+      <article class="card plan center">
         <div class="plan-head">
           <h3>Free</h3>
           <p class="price">0 SOL</p>
@@ -152,7 +175,7 @@
         <a class="btn btn-primary w-100" href="https://t.me/WhaleAiTrading_bot" target="_blank" rel="noopener">Start free</a>
       </article>
 
-      <article class="card plan">
+      <article class="card plan center">
         <div class="plan-head">
           <h3>Skilled</h3>
           <p class="price">1 SOL</p>
@@ -166,7 +189,7 @@
         <a class="btn btn-primary w-100" href="https://t.me/WhaleAiTrading_bot" target="_blank" rel="noopener">Get Skilled</a>
       </article>
 
-      <article class="card plan pro">
+      <article class="card plan pro center">
         <div class="plan-head">
           <h3>Pro</h3>
           <p class="price">2.5 SOL</p>
@@ -185,19 +208,19 @@
 
   <!-- Treasury -->
   <section id="treasury" class="section section--tight">
-    <div class="section-head">
+    <div class="container section-head center">
       <p class="eyebrow">Treasury</p>
       <h2>Support development</h2>
     </div>
-    <div class="donation">
+    <div class="container donation center">
       <code id="wallet">7pZvLkbusytg3VhEgRoLpkUBW1sPnhYy4KM2bJ2mhY9o</code>
       <button class="btn btn-ghost" id="copyBtn" data-copy="wallet">Copy</button>
     </div>
   </section>
 
-  <!-- Footer (super clean) -->
+  <!-- Footer -->
   <footer class="footer">
-    <div class="footer-grid">
+    <div class="container footer-grid">
       <div>
         <div class="brand-row">
           <img src="assets/whale.svg" alt="" class="logo small" />

@@ -23,3 +23,23 @@ document.addEventListener('click', (e)=>{
     setTimeout(()=> btn.textContent = prev, 900);
   });
 });
+
+// Swap logo to assets/logo.png if present; hide images if missing
+document.addEventListener('DOMContentLoaded', () => {
+  // Try to use a custom PNG logo if available
+  const brandLogo = document.querySelector('.logo');
+  if (brandLogo) {
+    const testImg = new Image();
+    testImg.onload = () => { brandLogo.src = 'assets/logo.png'; };
+    testImg.onerror = () => {}; // keep default svg
+    testImg.src = 'assets/logo.png';
+  }
+
+  // Hide broken images (so no broken icons)
+  document.querySelectorAll('img[data-hide-if-missing]').forEach(img => {
+    img.addEventListener('error', () => {
+      const parentMedia = img.closest('.media') || img.parentElement;
+      (parentMedia || img).style.display = 'none';
+    }, { once: true });
+  });
+});
