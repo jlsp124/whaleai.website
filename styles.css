@@ -14,32 +14,40 @@ html,body{height:100%}
 body{
   margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background:
-    radial-gradient(1200px 800px at 10% -10%, rgba(0,229,255,.12), transparent),
-    radial-gradient(1000px 700px at 90% 10%, rgba(109,40,217,.18), transparent),
+    radial-gradient(1400px 900px at 15% -10%, rgba(0,229,255,.12), transparent),
+    radial-gradient(1100px 800px at 90% 0%, rgba(109,40,217,.18), transparent),
     var(--bg);
   color:var(--text);
 }
+
+/* Eyebrow */
+.eyebrow{
+  letter-spacing:.12em; text-transform:uppercase; font-size:12px; opacity:.85;
+}
+
+/* Display headline */
+.display{font-size: clamp(48px, 8vw, 92px); line-height:1.02; letter-spacing:-.02em; margin:0 0 10px}
 
 /* Nav */
 .nav{
   position:sticky; top:0; z-index:50;
   display:flex; align-items:center; justify-content:space-between;
   gap:16px; padding:14px 20px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
   border-bottom:1px solid var(--edge);
-  background:linear-gradient(180deg, rgba(10,11,26,.7), rgba(10,11,26,.45));
+  background:linear-gradient(180deg, rgba(10,11,26,.65), rgba(10,11,26,.4));
 }
 .brand{display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text); font-weight:700}
 .logo{width:28px; height:28px}
 .logo.small{width:22px; height:22px}
-.links{display:flex; align-items:center; gap:14px}
+.links{display:flex; align-items:center; gap:16px}
 .links a{color:var(--text); text-decoration:none; opacity:.9}
 .links a:hover{opacity:1}
 
 /* Buttons */
 .btn{
   display:inline-flex; align-items:center; justify-content:center;
-  border:1px solid var(--edge); border-radius:10px;
+  border:1px solid var(--edge); border-radius:12px;
   padding:10px 14px; text-decoration:none; color:var(--text);
   transition:transform .15s ease, box-shadow .2s ease, background .2s ease, border-color .2s;
 }
@@ -48,37 +56,38 @@ body{
   background:linear-gradient(135deg, var(--grad-1), var(--grad-2));
   border-color:transparent; box-shadow:var(--glow);
 }
-.btn-ghost{background:rgba(255,255,255,0.04)}
+.btn-ghost{background:rgba(255,255,255,0.05)}
 .btn-lg{padding:14px 18px; font-weight:700}
 .w-100{width:100%}
 
 /* Hero */
-.hero{position:relative; min-height:78vh; display:grid; place-items:center; text-align:center; padding:80px 16px 40px}
-.hero-bg{
-  position:absolute; inset:0;
+.hero{position:relative; min-height:82vh; display:grid; place-items:center; text-align:center; padding:96px 16px 40px}
+.hero-mesh{
+  position:absolute; inset:0; z-index:-1;
   background:
-    radial-gradient(800px 500px at 50% 0%, rgba(0,229,255,.12), transparent),
-    radial-gradient(700px 600px at 70% 40%, rgba(109,40,217,.25), transparent);
-  z-index:-1;
+    radial-gradient(800px 500px at 50% 0%, rgba(0,229,255,.1), transparent),
+    radial-gradient(900px 600px at 70% 50%, rgba(109,40,217,.2), transparent);
+  filter:saturate(115%);
 }
-.hero h1{font-size: clamp(42px, 6vw, 72px); line-height:1.05; margin:0 0 16px}
-.sub{max-width:860px; margin:0 auto 20px; color:var(--muted); font-size: clamp(16px, 1.6vw, 20px)}
-.cta-row{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:18px 0 8px}
-.trust{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; list-style:none; padding:0; margin:16px 0 0}
-.trust li{border:1px solid var(--edge); padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.03)}
+.hero .lede{max-width:900px; margin:0 auto 22px; color:var(--muted); font-size: clamp(16px, 1.5vw, 22px)}
+.cta-row{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:20px 0 8px}
+.pills{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; list-style:none; padding:0; margin:16px 0 0}
+.pills li{border:1px solid var(--edge); padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.04)}
 
 /* Sections */
-.section{padding:72px 16px}
-.section h2{text-align:center; font-size: clamp(28px, 3.4vw, 40px); margin:0 0 26px}
+.section{padding:84px 16px}
+.section--tight{padding:64px 16px}
+.section-head{max-width:1100px; margin:0 auto 18px; text-align:center}
+.section h2{font-size: clamp(28px, 4vw, 48px); margin:8px 0 8px}
 
 /* Grids & cards */
 .grid{display:grid; gap:16px}
-.features-grid{grid-template-columns: repeat( auto-fill, minmax(240px, 1fr) ); max-width:1100px; margin:0 auto}
+.features-grid{grid-template-columns: repeat( auto-fill, minmax(260px, 1fr) ); max-width:1100px; margin:0 auto}
 .card{
-  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
-  border:1px solid var(--edge); border-radius:16px; padding:18px;
+  background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.02));
+  border:1px solid var(--edge); border-radius:16px; padding:20px;
 }
-.card h3{margin:0 0 8px}
+.card h3{margin:0 0 8px; font-size:20px}
 .card p{margin:0; color:var(--muted)}
 
 /* Steps */
@@ -92,14 +101,14 @@ body{
 .center{text-align:center}
 
 /* Plans */
-.plans-grid{grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); max-width:1000px; margin:0 auto}
+.plans-grid{grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); max-width:1000px; margin:0 auto}
 .plan .price{font-size:28px; margin:4px 0 0}
 .plan-head{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px}
 .plan-list{list-style:none; padding:0; margin:0 0 14px}
 .plan-list li{padding:6px 0; color:var(--muted)}
 .plan.pro{outline:1.5px solid rgba(0,229,255,.35)}
 
-/* Donate */
+/* Donate / Treasury */
 .donation{
   max-width:900px; margin:10px auto 0;
   display:flex; gap:8px; align-items:center; justify-content:center; flex-wrap:wrap;
@@ -114,9 +123,10 @@ code#wallet{
 .chip{
   border:1px solid var(--edge); padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.03)
 }
+.chip--glow{box-shadow:0 0 0 1px rgba(0,229,255,.15), 0 0 40px rgba(0,229,255,.15)}
 
 /* Footer */
-.footer{border-top:1px solid var(--edge); background:linear-gradient(180deg, rgba(255,255,255,.02), transparent); padding:32px 16px}
+.footer{border-top:1px solid var(--edge); background:linear-gradient(180deg, rgba(255,255,255,.02), transparent); padding:36px 16px}
 .footer-grid{max-width:1100px; margin:0 auto; display:grid; gap:24px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))}
 .footer h5{margin:0 0 8px}
 .footer ul{list-style:none; padding:0; margin:0}
