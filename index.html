@@ -1,64 +1,137 @@
-:root{
-  --bg:#0a0b1a;
-  --bg-2:#0c0f24;
-  --text:#eaf2ff;
-  --muted:#a8b0c2;
-  --edge:rgba(255,255,255,0.06);
-  --grad-1:#6d28d9; /* purple */
-  --grad-2:#00e5ff; /* cyan */
-  --glow:0 0 40px rgba(0,229,255,0.35);
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Whale AI — Smart Blockchain Insights</title>
+  <meta name="description" content="Whale AI helps you analyze blockchain data, copy-trade wallets, and access AI-powered insights." />
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="theme-color" content="#0a0b1a" />
+</head>
 
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:
-    radial-gradient(1400px 900px at 15% -10%, rgba(0,229,255,.12), transparent),
-    radial-gradient(1100px 800px at 90% 0%, rgba(109,40,217,.18), transparent),
-    var(--bg);
-  color:var(--text);
-}
+<body>
+  <!-- Navigation -->
+  <header class="nav">
+    <a class="brand" href="#hero">
+      <img class="logo" src="assets/whale.svg" alt="Whale AI logo" />
+      <span>Whale AI</span>
+    </a>
+    <nav class="links">
+      <a href="#features">Features</a>
+      <a href="#how">How It Works</a>
+      <a href="#plans">Plans</a>
+      <a class="btn btn-primary" href="https://t.me/WhaleAiTrading_bot" target="_blank" rel="noopener">Launch Bot</a>
+    </nav>
+  </header>
 
-/* Eyebrow */
-.eyebrow{
-  letter-spacing:.12em; text-transform:uppercase; font-size:12px; opacity:.85;
-}
+  <!-- Hero -->
+  <section id="hero" class="hero">
+    <div class="hero-inner">
+      <h1 class="display">AI-Driven Crypto Intelligence</h1>
+      <p class="lede">Whale AI tracks smart wallets, analyzes on-chain trends, and empowers you with AI-powered trading insights — in real time.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary btn-lg" href="https://t.me/WhaleAiTrading_bot" target="_blank">Launch on Telegram</a>
+        <a class="btn btn-ghost btn-lg" href="#features">Learn More</a>
+      </div>
+    </div>
+    <div class="hero-bg"></div>
+  </section>
 
-/* Display headline */
-.display{font-size: clamp(48px, 8vw, 92px); line-height:1.02; letter-spacing:-.02em; margin:0 0 10px}
+  <!-- Features -->
+  <section id="features" class="section">
+    <div class="section-head">
+      <h2>Powerful Features Built for Traders</h2>
+      <p class="muted">Everything you need to make data-driven moves on Solana.</p>
+    </div>
+    <div class="grid features-grid">
+      <div class="card fade-up">
+        <h3>Wallet Tracking</h3>
+        <p>Follow top performers, view their holdings, and analyze trade history in seconds.</p>
+      </div>
+      <div class="card fade-up">
+        <h3>AI Insights</h3>
+        <p>Get real-time predictions and trend analyses powered by machine learning models.</p>
+      </div>
+      <div class="card fade-up">
+        <h3>Copy Trading</h3>
+        <p>Mirror on-chain wallet activity automatically with smart copy-trading strategies.</p>
+      </div>
+      <div class="card fade-up">
+        <h3>Secure & Private</h3>
+        <p>Your data is encrypted end-to-end — we never sell or share it.</p>
+      </div>
+    </div>
+  </section>
 
-/* Nav */
-.nav{
-  position:sticky; top:0; z-index:50;
-  display:flex; align-items:center; justify-content:space-between;
-  gap:16px; padding:14px 20px;
-  backdrop-filter: blur(12px);
-  border-bottom:1px solid var(--edge);
-  background:linear-gradient(180deg, rgba(10,11,26,.65), rgba(10,11,26,.4));
-}
-.brand{display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text); font-weight:700}
-.logo{width:28px; height:28px}
-.logo.small{width:22px; height:22px}
-.links{display:flex; align-items:center; gap:16px}
-.links a{color:var(--text); text-decoration:none; opacity:.9}
-.links a:hover{opacity:1}
+  <!-- How It Works -->
+  <section id="how" class="section section--tight">
+    <div class="section-head">
+      <h2>How It Works</h2>
+      <p class="muted">From wallet connect to AI analysis — everything happens automatically.</p>
+    </div>
+    <ul class="steps">
+      <li class="fade-up"><span class="step-badge">1</span>Connect your wallet via Telegram bot.</li>
+      <li class="fade-up"><span class="step-badge">2</span>Whale AI analyzes on-chain wallet activity and market data.</li>
+      <li class="fade-up"><span class="step-badge">3</span>Receive AI-driven signals and copy trades instantly.</li>
+    </ul>
+  </section>
 
-/* Buttons */
-.btn{
-  display:inline-flex; align-items:center; justify-content:center;
-  border:1px solid var(--edge); border-radius:12px;
-  padding:10px 14px; text-decoration:none; color:var(--text);
-  transition:transform .15s ease, box-shadow .2s ease, background .2s ease, border-color .2s;
-}
-.btn:hover{transform:translateY(-1px)}
-.btn-primary{
-  background:linear-gradient(135deg, var(--grad-1), var(--grad-2));
-  border-color:transparent; box-shadow:var(--glow);
-}
-.btn-ghost{background:rgba(255,255,255,0.05)}
-.btn-lg{padding:14px 18px; font-weight:700}
-.w-100{width:100%}
+  <!-- Plans -->
+  <section id="plans" class="section">
+    <div class="section-head">
+      <h2>Choose Your Plan</h2>
+      <p class="muted">Simple pricing for every trader.</p>
+    </div>
+    <div class="grid plans-grid">
+      <div class="card plan fade-up">
+        <div class="plan-head"><h3>Free</h3><p class="price">$0</p></div>
+        <ul class="plan-list">
+          <li>Basic wallet tracking</li>
+          <li>AI alerts (3 per day)</li>
+          <li>Community support</li>
+        </ul>
+        <a href="https://t.me/WhaleAiTrading_bot" class="btn btn-ghost w-100">Start Free</a>
+      </div>
 
-/* Hero */
-.hero{position:relative; min-height:
+      <div class="card plan pro fade-up">
+        <div class="plan-head"><h3>Pro</h3><p class="price">$15 / month</p></div>
+        <ul class="plan-list">
+          <li>Unlimited AI signals</li>
+          <li>Copy trade automation</li>
+          <li>Advanced on-chain metrics</li>
+        </ul>
+        <a href="https://t.me/WhaleAiTrading_bot" class="btn btn-primary w-100">Upgrade to Pro</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <div class="brand-row">
+          <img class="logo small" src="assets/whale.svg" alt="" />
+          <strong>Whale AI</strong>
+        </div>
+        <p class="muted">© 2025 Whale AI. All rights reserved.</p>
+      </div>
+      <div>
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Connect</h5>
+        <ul>
+          <li><a href="mailto:zoom-jumbo-decree@duck.com">Email Support</a></li>
+          <li><a href="https://t.me/WhaleAiTrading_bot" target="_blank">Telegram Bot</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
