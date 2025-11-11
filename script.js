@@ -42,4 +42,86 @@ document.addEventListener('DOMContentLoaded', () => {
       (parentMedia || img).style.display = 'none';
     }, { once: true });
   });
+
+  // Scroll reveal animations
+  const revealSelectors = [
+    '.hero-inner > *',
+    '.section-head',
+    '.media',
+    '.features-grid .card',
+    '.steps li',
+    '.plans-grid .card',
+    '.integrations .chip',
+    '.donation',
+    '.footer-grid > div'
+  ];
+
+  const seen = new Set();
+  const elements = [];
+  revealSelectors.forEach(selector => {
+    document.querySelectorAll(selector).forEach(el => {
+      if (seen.has(el)) return;
+      seen.add(el);
+      elements.push(el);
+    });
+  });
+
+  if (elements.length) {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const observer = prefersReduced ? null : new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        obs.unobserve(entry.target);
+      });
+    }, {
+      threshold: 0.2,
+      rootMargin: '0px 0px -40px'
+    });
+
+    elements.forEach((el, index) => {
+      el.classList.add('reveal');
+      const delay = Math.min(index * 60, 480);
+      el.style.setProperty('--reveal-delay', `${delay}ms`);
+      if (observer) {
+        observer.observe(el);
+      } else {
+        el.classList.add('is-visible');
+      }
+    });
+  }
+
+  // Hero mesh parallax (desktop only)
+  const hero = document.querySelector('.hero');
+  const mesh = document.querySelector('.hero-mesh');
+  if (hero && mesh && window.matchMedia('(pointer:fine)').matches) {
+    let rafId = null;
+    let targetX = 0;
+    let targetY = 0;
+
+    const updateMesh = () => {
+      hero.style.setProperty('--tilt-x', targetX.toFixed(4));
+      hero.style.setProperty('--tilt-y', targetY.toFixed(4));
+      rafId = null;
+    };
+
+    hero.addEventListener('pointermove', (event) => {
+      const rect = hero.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - 0.5;
+      const y = (event.clientY - rect.top) / rect.height - 0.5;
+      targetX = x;
+      targetY = y;
+      if (rafId === null) {
+        rafId = requestAnimationFrame(updateMesh);
+      }
+    });
+
+    hero.addEventListener('pointerleave', () => {
+      targetX = 0;
+      targetY = 0;
+      if (rafId === null) {
+        rafId = requestAnimationFrame(updateMesh);
+      }
+    });
+  }
 });
