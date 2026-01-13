@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Whale AI - Phantom Connect</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#070b12" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #070b12;
+      --card: rgba(15, 23, 42, 0.85);
+      --text: #e6f0ff;
+      --muted: #9fb0c7;
+      --accent: linear-gradient(120deg, rgba(40,224,255,0.9), rgba(22,241,165,0.9));
+      --border: rgba(148,163,184,0.2);
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(900px 520px at 12% -10%, rgba(40, 224, 255, 0.16), transparent),
+        radial-gradient(700px 420px at 90% 0%, rgba(22, 241, 165, 0.10), transparent),
+        radial-gradient(900px 520px at 60% 120%, rgba(79, 140, 255, 0.12), transparent),
+        var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 18px;
+      display: flex;
+      justify-content: center;
+    }
+    .card {
+      max-width: 560px;
+      width: 100%;
+      background: var(--card);
+      border-radius: 18px;
+      padding: 22px 20px 26px;
+      box-shadow: 0 20px 60px rgba(3, 6, 20, 0.6), 0 0 0 1px var(--border);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(79, 140, 255, 0.18);
+      color: #9bc2ff;
+      font-size: 12px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(79, 140, 255, 0.35);
+    }
+    h1 { font-size: 24px; margin: 0 0 6px; }
+    .subtitle { font-size: 14px; color: var(--muted); margin-bottom: 18px; line-height: 1.5; }
+    .step {
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: rgba(7, 11, 18, 0.7);
+      border: 1px solid var(--border);
+    }
+    .step-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+    .label { font-size: 12px; color: var(--muted); margin-bottom: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
+    input {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,0.35);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 14px;
+      margin-bottom: 8px;
+      outline: none;
+    }
+    input:focus { border-color: rgba(40,224,255,0.7); }
+    .code {
+      font-family: "JetBrains Mono", Consolas, monospace;
+      font-size: 12px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      padding: 10px 12px;
+      word-break: break-all;
+      margin: 4px 0 10px;
+      border: 1px solid rgba(148,163,184,0.18);
+    }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      background: var(--accent);
+      color: #031019;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    button.secondary {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid rgba(148,163,184,0.4);
+      font-weight: 600;
+    }
+    button:disabled { opacity: 0.55; cursor: default; }
+    .status { font-size: 12px; margin-top: 10px; color: var(--muted); }
+    .status.success { color: #7cffb2; }
+    .status.error { color: #ff9b9b; }
+    .hint { font-size: 12px; color: var(--muted); margin: 8px 0 0; line-height: 1.4; }
+  </style>
+  <script src="https://unpkg.com/@solana/web3.js@1.95.0/lib/index.iife.js"></script>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">🐋 Whale AI <span style="opacity:.7">•</span> Non-custodial</div>
+    <h1>Connect Phantom</h1>
+    <div class="subtitle">
+      This page links your wallet to Whale AI and initializes your per-user vault PDA on-chain.
+      Whale AI never asks for seed phrases or private keys.
+    </div>
+
+    <div class="step">
+      <div class="step-title">1) Connect wallet</div>
+      <div class="label">Wallet address</div>
+      <div id="wallet-address" class="code">Not connected</div>
+      <button id="connect-btn" onclick="connectPhantom()">🔗 Connect Phantom</button>
+      <div class="hint">Open this page in Phantom’s in-app browser for best results.</div>
+    </div>
+
+    <div id="step-2" class="step" style="display:none;">
+      <div class="step-title">2) Vault + allowance</div>
+      <div class="label">Max SOL allowance (bot cap)</div>
+      <input id="max-sol" type="number" step="0.01" min="0" placeholder="e.g. 0.50" />
+      <div class="label">Initial vault deposit (optional)</div>
+      <input id="deposit-sol" type="number" step="0.01" min="0" placeholder="e.g. 0.25" />
+
+      <div class="label">Backend API</div>
+      <div id="backend-url" class="code">Loading...</div>
+
+      <div class="label">Solana RPC</div>
+      <div id="rpc" class="code">Loading...</div>
+
+      <div class="label">Program ID</div>
+      <div id="program-id" class="code">Loading...</div>
+
+      <div class="label">Bot authority (executes swaps)</div>
+      <div id="bot-auth" class="code">Loading...</div>
+
+      <div class="row" style="margin-top: 6px;">
+        <button id="init-btn" onclick="createVaultAndLink()">🧱 Create vault &amp; link</button>
+        <button class="secondary" type="button" onclick="saveDbOnly()">💾 Save DB only</button>
+      </div>
+      <div class="hint">
+        “Create vault &amp; link” sends an on-chain transaction to initialize your vault PDA and (optionally) deposit SOL.
+        “Save DB only” links your wallet to Whale AI without creating the vault (paper mode).
+      </div>
+    </div>
+
+    <div id="status" class="status">Waiting for Phantom…</div>
+  </div>
+
+  <script>
+    const qs = new URLSearchParams(window.location.search);
+    // If this page is hosted separately (e.g. GitHub Pages), pass `?api=https://YOUR_API_HOST`
+    // so the page can call `/api/config` and `/api/wallet/connected` on your backend.
+    const BACKEND_URL = (qs.get("api") || window.location.origin).replace(/\\/$/, "");
+    const TG_ID = qs.get("tg_id");
+    const PROGRAM_ID_OVERRIDE = qs.get("program_id");
+    const RPC_OVERRIDE = qs.get("rpc");
+
+    let walletAddress = null;
+    let config = null;
+
+    function setStatus(text, type) {
+      const el = document.getElementById("status");
+      el.textContent = text;
+      el.className = "status" + (type ? " " + type : "");
+    }
+
+    function u64ToLeBytes(n) {
+      let x = BigInt(n);
+      const out = new Uint8Array(8);
+      for (let i = 0; i < 8; i++) {
+        out[i] = Number(x & 0xffn);
+        x >>= 8n;
+      }
+      return out;
+    }
+
+    async function anchorDiscriminator(ixName) {
+      const input = new TextEncoder().encode("global:" + ixName);
+      const hash = await crypto.subtle.digest("SHA-256", input);
+      return new Uint8Array(hash).slice(0, 8);
+    }
+
+    async function loadConfig() {
+      try {
+        const res = await fetch(BACKEND_URL + "/api/config");
+        if (!res.ok) throw new Error(await res.text());
+        config = await res.json();
+      } catch (e) {
+        console.warn("Failed to load backend config:", e);
+        config = {};
+      }
+
+      const rpc = RPC_OVERRIDE || config.solana_rpc || "https://api.mainnet-beta.solana.com";
+      const programId = PROGRAM_ID_OVERRIDE || config.solana_program_id || "ReplaceWithProgramID";
+      const botAuth = config.bot_authority_pubkey || "ReplaceWithBotAuthorityPubkey";
+
+      document.getElementById("backend-url").textContent = BACKEND_URL;
+      document.getElementById("rpc").textContent = rpc;
+      document.getElementById("program-id").textContent = programId;
+      document.getElementById("bot-auth").textContent = botAuth;
+      return { rpc, programId, botAuth };
+    }
+
+    async function connectPhantom() {
+      try {
+        if (!TG_ID) {
+          setStatus("Missing tg_id in URL. Open this from the Telegram bot.", "error");
+          return;
+        }
+        if (!window.solana || !window.solana.isPhantom) {
+          setStatus("Phantom wallet not detected. Open this page in Phantom.", "error");
+          alert("Phantom wallet not detected. Install Phantom or open in the Phantom in-app browser.");
+          return;
+        }
+        const resp = await window.solana.connect({ onlyIfTrusted: false });
+        walletAddress = resp.publicKey.toString();
+        document.getElementById("wallet-address").textContent = walletAddress;
+        document.getElementById("step-2").style.display = "block";
+        setStatus("Wallet connected. Configure cap + deposit, then create vault.", "success");
+      } catch (e) {
+        console.error(e);
+        setStatus("Failed to connect Phantom: " + (e.message || e), "error");
+      }
+    }
+
+    async function saveDbOnly() {
+      if (!walletAddress) {
+        alert("Connect Phantom first.");
+        return;
+      }
+      const maxSol = parseFloat(document.getElementById("max-sol").value || "0");
+      if (!TG_ID) {
+        setStatus("Missing tg_id in URL. Open this from the Telegram bot.", "error");
+        return;
+      }
+      if (isNaN(maxSol) || maxSol <= 0) {
+        alert("Enter a positive max SOL amount.");
+        return;
+      }
+      setStatus("Saving wallet to Whale AI…", null);
+      const payload = {
+        tg_id: String(TG_ID),
+        wallet_address: walletAddress,
+        max_delegation_sol: maxSol,
+      };
+      const res = await fetch(BACKEND_URL + "/api/wallet/connected", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        setStatus("Backend error: " + text, "error");
+        return;
+      }
+      const data = await res.json();
+      setStatus("✅ Linked in DB. Vault: " + (data.vault_address || "n/a"), "success");
+    }
+
+    async function createVaultAndLink() {
+      if (!walletAddress) {
+        alert("Connect Phantom first.");
+        return;
+      }
+      if (!TG_ID) {
+        setStatus("Missing tg_id in URL. Open this from the Telegram bot.", "error");
+        return;
+      }
+      const maxSol = parseFloat(document.getElementById("max-sol").value || "0");
+      if (isNaN(maxSol) || maxSol <= 0) {
+        alert("Enter a positive max SOL amount.");
+        return;
+      }
+      const depositSol = parseFloat(document.getElementById("deposit-sol").value || "0");
+      const { rpc, programId, botAuth } = await loadConfig();
+      if (programId.includes("ReplaceWith")) {
+        alert("Backend SOLANA_PROGRAM_ID is not set. Deploy your program and set SOLANA_PROGRAM_ID.");
+        return;
+      }
+      if (botAuth.includes("ReplaceWith")) {
+        alert("Backend BOT_AUTHORITY_PUBKEY is not set. Set BOT_AUTHORITY_PUBKEY in .env (bot authority public key).");
+        return;
+      }
+
+      const connection = new solanaWeb3.Connection(rpc, "confirmed");
+      let userPk, programPk, botAuthPk;
+      try {
+        userPk = new solanaWeb3.PublicKey(walletAddress);
+        programPk = new solanaWeb3.PublicKey(programId);
+        botAuthPk = new solanaWeb3.PublicKey(botAuth);
+      } catch (e) {
+        console.error(e);
+        setStatus("Invalid program/bot authority key in config. Check SOLANA_PROGRAM_ID and BOT_AUTHORITY_PUBKEY.", "error");
+        return;
+      }
+
+      const [vaultPk] = solanaWeb3.PublicKey.findProgramAddressSync(
+        [new TextEncoder().encode("vault"), userPk.toBytes()],
+        programPk
+      );
+
+      const maxLamports = BigInt(Math.floor(maxSol * solanaWeb3.LAMPORTS_PER_SOL));
+      const depLamports = BigInt(Math.floor((depositSol || 0) * solanaWeb3.LAMPORTS_PER_SOL));
+
+      setStatus("Building transaction…", null);
+      const disc = await anchorDiscriminator("init_vault");
+      const data = new Uint8Array([
+        ...disc,
+        ...u64ToLeBytes(maxLamports),
+        ...botAuthPk.toBytes(),
+      ]);
+
+      const initIx = new solanaWeb3.TransactionInstruction({
+        programId: programPk,
+        keys: [
+          { pubkey: userPk, isSigner: true, isWritable: true },
+          { pubkey: vaultPk, isSigner: false, isWritable: true },
+          { pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false },
+        ],
+        data,
+      });
+
+      const tx = new solanaWeb3.Transaction().add(initIx);
+      if (depLamports > 0n) {
+        tx.add(
+          solanaWeb3.SystemProgram.transfer({
+            fromPubkey: userPk,
+            toPubkey: vaultPk,
+            lamports: Number(depLamports),
+          })
+        );
+      }
+
+      tx.feePayer = userPk;
+      tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+
+      try {
+        setStatus("Signing & sending via Phantom…", null);
+        const sent = await window.solana.signAndSendTransaction(tx);
+        const sig = sent.signature;
+        setStatus("Confirming on-chain…", null);
+        await connection.confirmTransaction(sig, "confirmed");
+
+        setStatus("Saving wallet to Whale AI…", null);
+        const payload = {
+          tg_id: String(TG_ID),
+          wallet_address: walletAddress,
+          max_delegation_sol: maxSol,
+          vault_address: vaultPk.toString(),
+          init_signature: sig,
+        };
+        const res = await fetch(BACKEND_URL + "/api/wallet/connected", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const text = await res.text();
+          setStatus("Backend error: " + text, "error");
+          return;
+        }
+        setStatus("✅ Vault created + linked. Vault: " + vaultPk.toString(), "success");
+      } catch (e) {
+        console.error(e);
+        setStatus("Transaction failed: " + (e.message || e), "error");
+      }
+    }
+
+    window.addEventListener("load", async () => {
+      await loadConfig();
+      if (!TG_ID) {
+        setStatus("Missing tg_id in URL. Open this from the Telegram bot.", "error");
+      } else {
+        setStatus("Telegram ID: " + TG_ID + ". Connect Phantom to continue.", null);
+      }
+    });
+  </script>
+</body>
+</html>
