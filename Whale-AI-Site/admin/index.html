@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Whale AI - Admin</title>
+  <meta name="theme-color" content="#070b12" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .admin-grid { display:grid; gap:18px; grid-template-columns: 1fr; }
+    .admin-actions { display:flex; gap:12px; flex-wrap:wrap; }
+    .search-row { display:flex; gap:12px; flex-wrap:wrap; }
+    .chart { width:100%; height:140px; background: rgba(255,255,255,0.02); border-radius: 12px; border:1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <header class="nav" data-nav>
+    <div class="container nav-inner">
+      <a class="brand" href="../index.html">
+        <img src="../assets/whale.svg" alt="Whale AI" />
+        <span>Whale AI Admin</span>
+      </a>
+      <nav class="nav-links">
+        <a href="../index.html">Site</a>
+        <a href="../waitlist.html">Waitlist</a>
+        <a href="../support.html">Support</a>
+      </nav>
+      <button class="nav-toggle" data-nav-toggle>Menu</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container section-head">
+        <div class="eyebrow">Admin</div>
+        <h1 style="margin:0;">Waitlist dashboard</h1>
+        <p class="muted">Enter your admin token to view waitlist entries.</p>
+      </div>
+
+      <div class="container admin-grid">
+        <div class="card">
+          <div id="admin-login">
+            <label class="eyebrow" for="admin-token">Admin token</label>
+            <input class="input" id="admin-token" placeholder="Paste ADMIN_TOKEN" />
+            <div class="admin-actions" style="margin-top:12px;">
+              <button class="btn primary" id="save-token">Save token</button>
+              <button class="btn ghost" id="clear-token">Clear</button>
+            </div>
+          </div>
+          <div id="admin-status" class="notice" style="margin-top:12px;">Waiting for token.</div>
+        </div>
+
+        <div class="card">
+          <h3>Stats</h3>
+          <div class="stats" style="margin:12px 0;">
+            <div class="stat"><div class="value" id="stat-total">--</div><div class="label">Total</div></div>
+            <div class="stat"><div class="value" id="stat-today">--</div><div class="label">Today</div></div>
+            <div class="stat"><div class="value" id="stat-refs">--</div><div class="label">Ref codes</div></div>
+          </div>
+          <canvas id="daily-chart" class="chart"></canvas>
+        </div>
+
+        <div class="card">
+          <div class="search-row">
+            <input class="input" id="search" placeholder="Filter by username or ref" />
+            <button class="btn ghost" id="refresh">Refresh</button>
+            <button class="btn ghost" id="export">Export CSV</button>
+          </div>
+          <div style="overflow:auto; margin-top:12px;">
+            <table class="table" id="entries-table">
+              <thead>
+                <tr>
+                  <th>Created</th>
+                  <th>Telegram</th>
+                  <th>Email</th>
+                  <th>Ref</th>
+                  <th>Ref Code</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../config.js"></script>
+  <script src="../script.js" defer></script>
+  <script>
+    const cfg = window.WHALEAI_CONFIG || {};
+    const apiBase = (cfg.WORKER_API_BASE_URL || '').replace(/\/$/, '');
+    const tokenKey = 'WHALEAI_ADMIN_TOKEN';
+
+    const statusEl = document.getElementById('admin-status');
+    const tokenInput = document.getElementById('admin-token');
+    const tbody = document.querySelector('#entries-table tbody');
+
+    function setStatus(text) {
+      statusEl.textContent = text;
+    }
+
+    function getToken() {
+      return sessionStorage.getItem(tokenKey) || '';
+    }
+
+    function setToken(val) {
+      sessionStorage.setItem(tokenKey, val);
+    }
+
+    function clearToken() {
+      sessionStorage.removeItem(tokenKey);
+    }
+
+    async function api(path) {
+      if (!apiBase) throw new Error('WORKER_API_BASE_URL not set');
+      const res = await fetch(apiBase + path, {
+        headers: {
+          'Authorization': 'Bearer ' + getToken()
+        }
+      });
+      if (!res.ok) throw new Error(await res.text());
+      return res;
+    }
+
+    function renderTable(rows, filter) {
+      tbody.innerHTML = '';
+      const term = (filter || '').toLowerCase();
+      rows.filter(r => {
+        if (!term) return true;
+        return String(r.telegram_username || '').toLowerCase().includes(term) || String(r.ref || '').toLowerCase().includes(term);
+      }).forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${r.created_at || ''}</td><td>${r.telegram_username || ''}</td><td>${r.email || ''}</td><td>${r.ref || ''}</td><td>${r.ref_code || ''}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function drawChart(series) {
+      const canvas = document.getElementById('daily-chart');
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * window.devicePixelRatio;
+      canvas.height = rect.height * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      const max = Math.max(1, ...series.map(s => s.count));
+      const barWidth = rect.width / series.length;
+      series.forEach((s, i) => {
+        const h = (s.count / max) * (rect.height - 20);
+        ctx.fillStyle = 'rgba(40,224,255,0.55)';
+        ctx.fillRect(i * barWidth + 6, rect.height - h - 10, barWidth - 12, h);
+      });
+    }
+
+    async function loadStats() {
+      const res = await api('/api/admin/stats');
+      const data = await res.json();
+      document.getElementById('stat-total').textContent = data.total_count || 0;
+      document.getElementById('stat-today').textContent = data.today_count || 0;
+      document.getElementById('stat-refs').textContent = (data.top_refs || []).length;
+      drawChart(data.daily_counts || []);
+    }
+
+    async function loadEntries() {
+      const res = await api('/api/admin/entries?limit=200');
+      const data = await res.json();
+      renderTable(data.entries || [], document.getElementById('search').value);
+    }
+
+    async function exportCsv() {
+      const res = await api('/api/admin/export.csv');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'waitlist_export.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    async function refreshAll() {
+      try {
+        if (!getToken()) {
+          setStatus('Set ADMIN_TOKEN to continue.');
+          return;
+        }
+        setStatus('Loading...');
+        await loadStats();
+        await loadEntries();
+        setStatus('Loaded.');
+      } catch (e) {
+        setStatus('Error: ' + (e.message || e));
+      }
+    }
+
+    document.getElementById('save-token').addEventListener('click', () => {
+      setToken(tokenInput.value.trim());
+      refreshAll();
+    });
+
+    document.getElementById('clear-token').addEventListener('click', () => {
+      clearToken();
+      tokenInput.value = '';
+      setStatus('Token cleared.');
+    });
+
+    document.getElementById('refresh').addEventListener('click', refreshAll);
+    document.getElementById('export').addEventListener('click', exportCsv);
+    document.getElementById('search').addEventListener('input', () => loadEntries());
+
+    tokenInput.value = getToken();
+    refreshAll();
+  </script>
+</body>
+</html>
