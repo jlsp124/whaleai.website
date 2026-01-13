@@ -1,82 +1,72 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Whale AI - Terms of Service</title>
-  <meta name="description" content="Whale AI Terms of Service" />
-  <meta name="theme-color" content="#0a0b1a" />
+  <title>Whale AI - Terms</title>
+  <meta name="description" content="Whale AI terms of service placeholder." />
+  <meta name="theme-color" content="#070b12" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="nav">
-    <a class="brand" href="index.html">
-      <img class="logo" src="assets/whale.svg" alt="Whale AI" />
-      <span>Whale AI</span>
-    </a>
-    <nav class="links">
-      <a href="index.html#features" class="eyebrow">Features</a>
-      <a href="index.html#how" class="eyebrow">How</a>
-      <a href="index.html#plans" class="eyebrow">Plans</a>
-      <a class="btn btn-primary" href="https://t.me/WhaleAiTrading_bot" target="_blank" rel="noopener">Launch bot</a>
-    </nav>
+  <header class="nav" data-nav>
+    <div class="container nav-inner">
+      <a class="brand" href="index.html">
+        <img src="assets/whale.svg" alt="Whale AI" />
+        <span>Whale AI</span>
+      </a>
+      <nav class="nav-links">
+        <a href="features.html">Features</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="waitlist.html">Waitlist</a>
+        <a href="roadmap.html">Roadmap</a>
+        <a href="support.html">Support</a>
+        <a href="donate.html">Donate</a>
+      </nav>
+      <button class="nav-toggle" data-nav-toggle>Menu</button>
+    </div>
   </header>
 
-  <main class="section content">
-    <h1>Terms of Service</h1>
-    <p class="muted">Last updated: 2025-12-15</p>
-
-    <h2>1. Important notices</h2>
-    <ul class="card list">
-      <li><strong>Not financial advice.</strong> Whale AI is an automation tool; crypto trading is risky and can result in total loss.</li>
-      <li><strong>Non-custodial.</strong> Whale AI never asks for seed phrases or private keys, and does not custody user funds.</li>
-      <li><strong>Paper mode vs live mode.</strong> Paper mode simulates trades; live mode can execute real on-chain transactions and may lose funds.</li>
-    </ul>
-
-    <h2>2. The service</h2>
-    <p>Whale AI is a Telegram bot and web interface that can link a wallet, let you follow whale wallets, and execute or simulate copy-trades according to your rules.</p>
-
-    <h2>3. Wallet linking and vault allowances</h2>
-    <p>When you link a wallet, you may also initialize an on-chain vault (a program-derived address controlled by the Whale AI Solana program) and set an allowance. You control whether trading is active and can withdraw at any time, subject to on-chain rules and network conditions.</p>
-
-    <h2>4. Fees, credits and Pro</h2>
-    <ul class="card list">
-      <li><strong>Credits:</strong> 1 credit per executed trade (buy or sell) in the bot.</li>
-      <li><strong>Pro:</strong> monthly plan with unlimited trades during the active period.</li>
-      <li><strong>No performance fees:</strong> Whale AI does not charge a percentage of profits.</li>
-      <li><strong>On-chain payments:</strong> transactions are final once confirmed.</li>
-    </ul>
-
-    <h2>5. Your responsibilities</h2>
-    <ul class="card list">
-      <li>Keep control of your wallet and review every on-chain approval and transaction.</li>
-      <li>Use sensible risk limits and only trade what you can afford to lose.</li>
-      <li>Comply with laws and regulations in your jurisdiction.</li>
-    </ul>
-
-    <h2>6. Limitations and third parties</h2>
-    <p>Whale AI depends on third-party networks and services (e.g., Solana RPC providers, Jupiter pricing APIs). Outages, congestion, inaccurate pricing, and other failures may occur.</p>
-
-    <h2>7. Contact</h2>
-    <p>Support: <a href="mailto:support@YOUR_DOMAIN">support@YOUR_DOMAIN</a></p>
+  <main>
+    <section class="section">
+      <div class="container section-head">
+        <div class="eyebrow">Legal</div>
+        <h1 style="margin:0;">Terms of Service</h1>
+        <p class="muted">Placeholder terms. Replace with your legal copy.</p>
+      </div>
+      <div class="container card">
+        <p class="muted">This document is a placeholder. Replace with your official Terms of Service. Whale AI provides automation tooling only and does not provide financial advice.</p>
+        <p class="muted">By using the site, you agree that you are responsible for your own actions and compliance with local laws.</p>
+      </div>
+    </section>
   </main>
 
   <footer class="footer">
     <div class="container footer-grid">
-      <div><strong>Whale AI</strong><p class="muted">&copy; 2025 Whale AI</p></div>
       <div>
-        <h5>Legal</h5>
-        <ul>
-          <li><a href="privacy.html">Privacy Policy</a></li>
-          <li><a href="terms.html">Terms of Service</a></li>
-        </ul>
+        <div class="brand" style="margin-bottom:10px;">
+          <img src="assets/whale.svg" alt="" />
+          <span>Whale AI</span>
+        </div>
+        <p class="muted">Non-custodial Solana automation. No advice. No guarantees.</p>
       </div>
-      <div><h5>Back</h5><ul><li><a href="index.html">Return to site</a></li></ul></div>
+      <div>
+        <h4>Support</h4>
+        <p><a data-config-href="support_email" href="#">Contact support</a></p>
+        <p><a href="support.html">FAQ</a></p>
+      </div>
+      <div>
+        <h4>Privacy</h4>
+        <p><a href="privacy.html">Privacy policy</a></p>
+      </div>
     </div>
   </footer>
 
+  <script src="config.js"></script>
   <script src="script.js" defer></script>
 </body>
 </html>
-

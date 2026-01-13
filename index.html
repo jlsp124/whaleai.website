@@ -1,237 +1,191 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Whale AI - Non-custodial Solana copy-trading</title>
-  <meta name="description" content="A non-custodial Solana whale copy-trading Telegram bot. Paper trade first, then fund a program-owned vault for live trading." />
-  <meta name="theme-color" content="#0a0b1a" />
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-  <meta property="og:title" content="Whale AI - Non-custodial Solana copy-trading" />
-  <meta property="og:description" content="A non-custodial Solana whale copy-trading Telegram bot. Paper trade first, then fund a program-owned vault for live trading." />
+  <title>Whale AI - Non-custodial Solana automation</title>
+  <meta name="description" content="Whale AI is a non-custodial Solana automation tool for following on-chain wallet activity. Join the beta waitlist.">
+  <meta property="og:title" content="Whale AI - Non-custodial Solana automation" />
+  <meta property="og:description" content="Join the beta waitlist for Whale AI. Non-custodial. No advice. Transparent rules." />
   <meta property="og:image" content="assets/landingpage.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#070b12" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Nav -->
-  <header class="nav">
-    <a class="brand" href="#top">
-      <!-- If assets/logo.png exists, JS will swap it in automatically -->
-      <img class="logo" src="assets/whale.svg" alt="Whale AI" />
-      <span>Whale AI</span>
-    </a>
-    <nav class="links">
-      <a href="#features" class="eyebrow">Features</a>
-      <a href="#how" class="eyebrow">How</a>
-      <a href="#plans" class="eyebrow">Plans</a>
-      <a href="#treasury" class="eyebrow">Treasury</a>
-      <a class="btn btn-primary" href="https://t.me/WhaleAiTrading_bot" target="_blank" rel="noopener">Launch bot</a>
-    </nav>
+  <header class="nav" data-nav>
+    <div class="container nav-inner">
+      <a class="brand" href="index.html">
+        <img src="assets/whale.svg" alt="Whale AI" />
+        <span>Whale AI</span>
+      </a>
+      <nav class="nav-links">
+        <a href="features.html">Features</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="waitlist.html">Waitlist</a>
+        <a href="roadmap.html">Roadmap</a>
+        <a href="support.html">Support</a>
+        <a href="donate.html">Donate</a>
+      </nav>
+      <button class="nav-toggle" data-nav-toggle>Menu</button>
+    </div>
   </header>
 
-  <!-- Hero -->
-  <section id="top" class="hero hero--metalab">
-    <div class="hero-mesh" aria-hidden="true"></div>
-    <div class="container hero-inner">
-      <p class="eyebrow center">Solana | Non-custodial | Copy trading</p>
-      <h1 class="display center">Copy-trade whales on Solana</h1>
-      <p class="lede center">A Telegram bot to <strong>follow whale wallets</strong> with <strong>paper mode</strong> and a path to <strong>live trading via a program-owned vault</strong>. No seed phrases. No custody.</p>
-      <div class="cta-row center">
-        <a class="btn btn-primary btn-lg" href="https://t.me/WhaleAiTrading_bot" target="_blank" rel="noopener">Launch on Telegram</a>
-        <a class="btn btn-ghost btn-lg" href="#plans">View plans</a>
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="pill">Non-custodial - No advice - Transparent rules</div>
+          <h1 class="display">Whale AI</h1>
+          <p class="lede">A Solana automation tool for following public wallet activity with user-defined rules. No custody. No promises. Built for transparency.</p>
+          <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:24px;">
+            <a class="btn primary" href="waitlist.html">Join Beta Waitlist</a>
+            <a class="btn ghost" data-config-href="telegram_url" href="#">Get updates</a>
+          </div>
+          <p class="muted" style="margin-top:12px;">Whale AI does not provide financial advice or guarantees.</p>
+        </div>
+        <div class="hero-card">
+          <div class="badge">Beta status</div>
+          <h3>Waitlist momentum</h3>
+          <div class="stats" style="margin-top:16px;">
+            <div class="stat">
+              <div class="value" data-waitlist-count>--</div>
+              <div class="label">Total signups</div>
+            </div>
+            <div class="stat">
+              <div class="value" data-waitlist-today>--</div>
+              <div class="label">Signups today</div>
+            </div>
+            <div class="stat">
+              <div class="value" data-waitlist-week>--</div>
+              <div class="label">Last 7 days</div>
+            </div>
+          </div>
+          <div class="notice" style="margin-top:16px;">Join the beta to get early access, updates, and group invites.</div>
+        </div>
       </div>
-      <ul class="pills center">
-        <li>Custom whale lists</li>
-        <li>Paper trading first</li>
-        <li>Credits + Pro plans</li>
-        <li>Logs &amp; PnL</li>
-      </ul>
-    </div>
-  </section>
+      <div class="hero-shape" aria-hidden="true"></div>
+    </section>
 
-  <!-- Showcase (drop images into /assets; hides if missing) -->
-  <section id="showcase" class="section section--tight">
-    <div class="container">
-      <div class="media">
-        <picture>
-          <source srcset="assets/landingpage.webp" type="image/webp" />
-          <img data-hide-if-missing class="illustration" src="assets/landingpage.png" alt="Whale AI landing" loading="lazy" />
-        </picture>
+    <section class="section">
+      <div class="container section-head">
+        <div class="eyebrow">How it will work</div>
+        <h2>High level workflow</h2>
+        <p class="muted">We keep the process simple and transparent. You define the rules. You control the wallet.</p>
       </div>
-      <div class="media media--pair">
-        <picture>
-          <source srcset="assets/mobile.webp" type="image/webp" />
-          <img data-hide-if-missing class="illustration" src="assets/mobile.png" alt="Whale AI mobile" loading="lazy" />
-        </picture>
+      <div class="container grid">
+        <div class="card reveal">
+          <h3>Discover wallets</h3>
+          <p>Follow a curated or custom list of public wallets and monitor swaps in real time.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Set rules</h3>
+          <p>Define limits per wallet: min/max size, exposure, TP/SL, and daily caps.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Automate safely</h3>
+          <p>Automations only execute if your safety rules and caps pass.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Review results</h3>
+          <p>Track logs, open positions, and summaries without hiding anything.</p>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Partner chip -->
-  <section class="integrations">
-    <div class="chip chip--glow">Powered by <strong>Solana</strong> + <strong>Jupiter (prices)</strong></div>
-  </section>
+    <section class="section tight">
+      <div class="container section-head">
+        <div class="eyebrow">Safety and transparency</div>
+        <h2>What we do and do not do</h2>
+      </div>
+      <div class="container grid">
+        <div class="card reveal">
+          <h3>Non-custodial</h3>
+          <p>You keep control of your wallet and funds. No seed phrases. No custody.</p>
+        </div>
+        <div class="card reveal">
+          <h3>No advice</h3>
+          <p>We provide tooling only. We do not provide financial advice or guarantee outcomes.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Clear pricing</h3>
+          <p>Credits per executed trade or an optional unlimited plan. No performance fees.</p>
+        </div>
+      </div>
+    </section>
 
-  <!-- Features -->
-  <section id="features" class="section">
-    <div class="container section-head center">
-      <p class="eyebrow">Capabilities</p>
-      <h2>Everything you need to trade smarter</h2>
-    </div>
-    <div class="container grid features-grid">
-      <article class="card center">
-        <h3>Copy-trade whales</h3>
-        <p>Follow specific wallets and mirror buy/sell events with per-user rules and limits.</p>
-      </article>
-      <article class="card center">
-        <h3>Paper mode</h3>
-        <p>Simulate trades using Jupiter price quotes so you can validate rules before risking SOL.</p>
-      </article>
-      <article class="card center">
-        <h3>Non-custodial vault</h3>
-        <p>For live mode, a Solana program can hold funds in a per-user PDA vault with an allowance.</p>
-      </article>
-      <article class="card center">
-        <h3>Credits + Pro</h3>
-        <p>Pay per executed trade using credits, or go Pro for unlimited trades (monthly).</p>
-      </article>
-      <article class="card center">
-        <h3>Logs &amp; PnL</h3>
-        <p>See recent trades, open positions, and realized PnL directly in Telegram.</p>
-      </article>
-      <article class="card center">
-        <h3>Admin dashboard</h3>
-        <p>Monitor users, whales, trades, and payments from a basic admin web UI.</p>
-      </article>
-    </div>
-  </section>
-
-  <!-- How -->
-  <section id="how" class="section">
-    <div class="container section-head center">
-      <p class="eyebrow">Flow</p>
-      <h2>How it works</h2>
-    </div>
-    <ol class="container steps">
-      <li>
-        <div class="step-badge">1</div>
-        <div>
-          <h4>Link your wallet</h4>
-          <p>Connect with Phantom from the bot. No seed phrases, no private keys.</p>
-        </div>
-      </li>
-      <li>
-        <div class="step-badge">2</div>
-        <div>
-          <h4>Add custom whales</h4>
-          <p>Follow wallets you trust and configure min/max size, exposure, TP/SL.</p>
-        </div>
-      </li>
-      <li>
-        <div class="step-badge">3</div>
-        <div>
-          <h4>Start in paper mode</h4>
-          <p>Simulate the pipeline end-to-end and review logs before going live.</p>
-        </div>
-      </li>
-      <li>
-        <div class="step-badge">4</div>
-        <div>
-          <h4>Go live via vault (optional)</h4>
-          <p>Fund a program-owned vault and trade through the Solana program with an allowance.</p>
-        </div>
-      </li>
-    </ol>
-    <div class="center">
-      <a class="btn btn-primary" href="https://t.me/WhaleAiTrading_bot" target="_blank" rel="noopener">Start in Telegram</a>
-    </div>
-  </section>
-
-  <!-- Plans -->
-  <section id="plans" class="section">
-    <div class="container section-head center">
-      <p class="eyebrow">Pricing</p>
-      <h2>Credits or Pro</h2>
-    </div>
-    <div class="container grid plans-grid">
-      <article class="card plan center">
-        <div class="plan-head">
+    <section class="section">
+      <div class="container section-head">
+        <div class="eyebrow">Pricing teaser</div>
+        <h2>Credits or unlimited</h2>
+        <p class="muted">Final pricing will be confirmed before launch.</p>
+      </div>
+      <div class="container grid">
+        <div class="card reveal">
           <h3>Credits</h3>
-          <p class="price">Pay per trade</p>
+          <p>200 credits - 0.02 SOL</p>
+          <p>600 credits - 0.05 SOL</p>
+          <p>1500 credits - 0.10 SOL</p>
         </div>
-        <ul class="plan-list">
-          <li>200 credits - 0.02 SOL</li>
-          <li>600 credits - 0.05 SOL</li>
-          <li>1500 credits - 0.10 SOL</li>
-          <li>1 credit per executed trade</li>
-        </ul>
-        <a class="btn btn-primary w-100" href="https://t.me/WhaleAiTrading_bot" target="_blank" rel="noopener">Buy credits in bot</a>
-      </article>
-
-      <article class="card plan pro center">
-        <div class="plan-head">
-          <h3>Pro</h3>
-          <p class="price"><span id="proPrice">1.50</span> SOL / month</p>
+        <div class="card reveal">
+          <h3>Unlimited</h3>
+          <p>Pro plan range: 1.0 to 2.5 SOL per month</p>
+          <p>Unlimited trades, same safety caps, no performance fees.</p>
         </div>
-        <ul class="plan-list">
-          <li>Unlimited trades</li>
-          <li>No performance fees</li>
-          <li>Monthly subscription</li>
-          <li>Credits stay untouched</li>
-        </ul>
-        <a class="btn btn-primary w-100" href="https://t.me/WhaleAiTrading_bot" target="_blank" rel="noopener">Go Pro in bot</a>
-      </article>
-    </div>
-    <p class="hint center">Purchases happen inside the bot using Solana Pay.</p>
-  </section>
+      </div>
+      <div class="container" style="margin-top:20px;">
+        <a class="btn primary" href="pricing.html">See pricing details</a>
+      </div>
+    </section>
 
-  <!-- Treasury -->
-  <section id="treasury" class="section section--tight">
-    <div class="container section-head center">
-      <p class="eyebrow">Treasury</p>
-      <h2>Support development</h2>
-    </div>
-    <div class="container donation center">
-      <code id="wallet">7pZvLkbusytg3VhEgRoLpkUBW1sPnhYy4KM2bJ2mhY9o</code>
-      <button class="btn btn-ghost" id="copyBtn" data-copy="wallet">Copy</button>
-    </div>
-  </section>
+    <section class="section tight">
+      <div class="container card reveal" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+        <div>
+          <div class="eyebrow">Beta access</div>
+          <h2 style="margin:6px 0 4px;">Join the waitlist</h2>
+          <p class="muted" style="margin:0;">Get notified when beta waves open. No spam.</p>
+        </div>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <a class="btn primary" href="waitlist.html">Join waitlist</a>
+          <a class="btn ghost" href="roadmap.html">View roadmap</a>
+        </div>
+      </div>
+    </section>
+  </main>
 
-  <!-- Footer -->
   <footer class="footer">
     <div class="container footer-grid">
       <div>
-        <div class="brand-row">
-          <img src="assets/whale.svg" alt="" class="logo small" />
-          <strong>Whale AI</strong>
+        <div class="brand" style="margin-bottom:10px;">
+          <img src="assets/whale.svg" alt="" />
+          <span>Whale AI</span>
         </div>
-        <p class="muted">Non-custodial copy-trading for Solana. Paper mode first, then optional vault-based live trading.</p>
-        <p class="muted">Support: <a href="mailto:support@YOUR_DOMAIN">support@YOUR_DOMAIN</a></p>
+        <p class="muted">Non-custodial Solana automation. No advice. No guarantees.</p>
       </div>
       <div>
-        <h5>Links</h5>
-        <ul>
-          <li><a href="https://t.me/WhaleAiTrading_bot" target="_blank" rel="noopener">Launch bot</a></li>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#how">How it works</a></li>
-          <li><a href="#plans">Plans</a></li>
-          <li><a href="https://github.com/YOUR_REPO" target="_blank" rel="noopener">GitHub repo</a></li>
-        </ul>
+        <h4>Links</h4>
+        <p><a href="features.html">Features</a></p>
+        <p><a href="pricing.html">Pricing</a></p>
+        <p><a href="waitlist.html">Waitlist</a></p>
+        <p><a href="donate.html">Donate</a></p>
       </div>
       <div>
-        <h5>Legal</h5>
-        <ul>
-          <li><a href="privacy.html">Privacy Policy</a></li>
-          <li><a href="terms.html">Terms of Service</a></li>
-          <li><span class="muted">&copy; 2025 Whale AI</span></li>
-        </ul>
+        <h4>Support</h4>
+        <p><a data-config-href="support_email" href="#">Contact support</a></p>
+        <p><a href="support.html">FAQ</a></p>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <p><a href="terms.html">Terms</a></p>
+        <p><a href="privacy.html">Privacy</a></p>
       </div>
     </div>
   </footer>
 
+  <script src="config.js"></script>
   <script src="script.js" defer></script>
 </body>
 </html>
