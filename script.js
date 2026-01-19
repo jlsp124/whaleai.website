@@ -1,5 +1,7 @@
 (() => {
   const cfg = window.WHALEAI_CONFIG || {};
+  const hasConfig = !!window.WHALEAI_CONFIG;
+  let loggedApi = false;
   const defaults = {
     SITE_BASE_URL: window.location.origin,
     WORKER_API_BASE_URL: "",
@@ -48,8 +50,20 @@
 
   function getApiBase() {
     const override = getApiOverride();
-    if (override) return { base: override, hasOverride: true };
+    if (override) {
+      if (!loggedApi) {
+        console.info("WHALEAI_CONFIG loaded:", hasConfig);
+        console.info("WORKER_API_BASE_URL override:", override);
+        loggedApi = true;
+      }
+      return { base: override, hasOverride: true };
+    }
     const base = normalizeUrl(getCfg("WORKER_API_BASE_URL"));
+    if (!loggedApi) {
+      console.info("WHALEAI_CONFIG loaded:", hasConfig);
+      console.info("WORKER_API_BASE_URL:", base || "(empty)");
+      loggedApi = true;
+    }
     return { base, hasOverride: false };
   }
 
@@ -242,6 +256,8 @@
     const addressEl = document.querySelector("[data-donate-address]");
     const linkEl = document.querySelector("[data-donate-link]");
     const urlEl = document.querySelector("[data-donate-url]");
+    const copyLinkBtn = document.querySelector("[data-copy-paylink]");
+    const helpEl = document.querySelector("[data-donate-help]");
     const qrEl = document.getElementById("donate-qr");
     if (!addressEl || !linkEl) return;
 
@@ -257,21 +273,37 @@
     const amountButtons = document.querySelectorAll("[data-donate-amount]");
     const customInput = document.getElementById("donate-custom");
 
-    function buildUrl(amount) {
+    function buildUrls(amount) {
       const label = encodeURIComponent("Whale AI");
       const message = encodeURIComponent("Support Whale AI development");
       const amt = amount ? `amount=${amount}` : "";
       const qs = [amt, `label=${label}`, `message=${message}`].filter(Boolean).join("&");
-      return `solana:${address}?${qs}`;
+      const deepLink = `solana:${address}?${qs}`;
+      const webLink = `https://solana.com/pay/${address}${qs ? `?${qs}` : ""}`;
+      return { deepLink, webLink };
     }
 
     function update(amount) {
       const value = amount || (customInput ? customInput.value : "");
       const clean = value ? Number(value) : "";
       const amountStr = clean && !Number.isNaN(clean) ? clean.toString() : "";
-      const url = buildUrl(amountStr);
-      linkEl.setAttribute("href", url);
-      if (urlEl) urlEl.textContent = url;
+      const { deepLink, webLink } = buildUrls(amountStr);
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || "");
+      linkEl.setAttribute("href", isMobile ? deepLink : webLink);
+      linkEl.setAttribute("target", isMobile ? "_self" : "_blank");
+      if (urlEl) urlEl.textContent = webLink;
+      if (helpEl) {
+        helpEl.textContent = isMobile
+          ? "Opens directly in wallet on mobile."
+          : "On desktop, scan the QR or copy the payment link.";
+      }
+      if (copyLinkBtn) {
+        copyLinkBtn.onclick = async () => {
+          await navigator.clipboard.writeText(webLink);
+          copyLinkBtn.textContent = "Copied";
+          setTimeout(() => (copyLinkBtn.textContent = "Copy payment link"), 1200);
+        };
+      }
 
       if (qrEl) {
         const qrBase = normalizeUrl(getCfg("QR_IMAGE_BASE_URL"));
@@ -279,7 +311,7 @@
           qrEl.style.display = "none";
           return;
         }
-        const qrUrl = `${qrBase}?size=220x220&data=${encodeURIComponent(url)}`;
+        const qrUrl = `${qrBase}?size=220x220&data=${encodeURIComponent(webLink)}`;
         qrEl.setAttribute("src", qrUrl);
       }
     }

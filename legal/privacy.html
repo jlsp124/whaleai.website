@@ -39,24 +39,30 @@
         <p class="muted">Effective date: update this before launch.</p>
       </div>
 
-      <div class="container card">
+      <div class="container card legal">
         <h3>1) Data we collect</h3>
-        <p class="muted">For the waitlist we collect: Telegram username (required), optional email, optional “heard about” note, referral attribution (ref), assigned referral code, IP hash, and user agent.</p>
+        <ul>
+          <li>Telegram username (required)</li>
+          <li>Email (optional)</li>
+          <li>Heard about / referral source (optional)</li>
+          <li>Attribution ref and assigned referral code</li>
+          <li>IP hash and user agent (abuse prevention)</li>
+        </ul>
 
         <h3>2) Why we collect it</h3>
-        <p class="muted">We use the data to manage the waitlist, prevent abuse, and measure referral attribution. We do not sell your data.</p>
+        <p>We use the data to manage the waitlist, prevent abuse, and measure referral attribution. We do not sell your data.</p>
 
         <h3>3) IP hashing</h3>
-        <p class="muted">We never store raw IP addresses. We store a one-way hash of IP + a secret salt for abuse prevention.</p>
+        <p>We never store raw IP addresses. We store a one-way hash of IP + a secret salt for abuse prevention.</p>
 
         <h3>4) Data retention</h3>
-        <p class="muted">We retain waitlist data until it is no longer needed for beta operations. You can request deletion by contacting support.</p>
+        <p>We retain waitlist data until it is no longer needed for beta operations. You can request deletion by contacting support.</p>
 
         <h3>5) Third-party processors</h3>
-        <p class="muted">We use Cloudflare (Workers, D1, KV) to process and store waitlist data.</p>
+        <p>We use Cloudflare (Workers, D1, KV) to process and store waitlist data.</p>
 
         <h3>6) Contact</h3>
-        <p class="muted">For privacy requests, contact <a data-config-href="support_email" href="#">support</a>.</p>
+        <p>For privacy requests, contact <a data-config-href="support_email" href="#">support</a>.</p>
       </div>
     </section>
   </main>

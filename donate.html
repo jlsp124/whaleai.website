@@ -55,10 +55,12 @@
             <div class="notice" data-donate-address>Wallet address loading...</div>
             <button class="btn ghost" data-copy-address style="margin-top:8px;">Copy address</button>
           </div>
-          <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;">
+          <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
             <a class="btn primary" data-donate-link href="#">Open in wallet</a>
-            <span class="muted" data-donate-url></span>
+            <button class="btn ghost" data-copy-paylink>Copy payment link</button>
           </div>
+          <p class="muted" data-donate-help style="margin:10px 0 0;">Use the QR or payment link on desktop.</p>
+          <div class="notice" style="margin-top:10px; word-break:break-all;" data-donate-url></div>
         </div>
         <div class="card reveal center">
           <h3>Scan QR</h3>
