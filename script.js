@@ -1,23 +1,38 @@
-ï»¿(() => {
+(() => {
   const cfg = window.WHALEAI_CONFIG || {};
   const defaults = {
-    WEBSITE_BASE_URL: window.location.origin,
+    SITE_BASE_URL: window.location.origin,
     WORKER_API_BASE_URL: "",
-    TELEGRAM_URL: "",
+    TELEGRAM_COMMUNITY_URL: "",
     DONATE_SOL_ADDRESS: "",
     SUPPORT_EMAIL: "",
     GITHUB_URL: "",
     QR_IMAGE_BASE_URL: "https://api.qrserver.com/v1/create-qr-code/"
   };
 
+  const aliases = {
+    SITE_BASE_URL: ["WEBSITE_BASE_URL"],
+    TELEGRAM_COMMUNITY_URL: ["TELEGRAM_URL"]
+  };
+
   function getCfg(key) {
-    const v = cfg[key];
-    return (v === undefined || v === null || v === "") ? defaults[key] : v;
+    let value = cfg[key];
+    if (value === undefined || value === null || value === "") {
+      const alt = aliases[key] || [];
+      for (const altKey of alt) {
+        if (cfg[altKey]) {
+          value = cfg[altKey];
+          break;
+        }
+      }
+    }
+    return (value === undefined || value === null || value === "") ? defaults[key] : value;
   }
 
   function isPlaceholder(value) {
     if (!value) return true;
-    return String(value).includes("YOUR_") || String(value).includes("REPLACE_");
+    const str = String(value);
+    return str.includes("YOUR_") || str.includes("REPLACE_") || str.includes("FILL_ME");
   }
 
   function normalizeUrl(value) {
@@ -25,14 +40,31 @@
     return String(value).replace(/\/$/, "");
   }
 
+  function getApiOverride() {
+    const qs = new URLSearchParams(window.location.search);
+    const api = qs.get("api") || "";
+    return normalizeUrl(api);
+  }
+
+  function getApiBase() {
+    const override = getApiOverride();
+    if (override) return { base: override, hasOverride: true };
+    const base = normalizeUrl(getCfg("WORKER_API_BASE_URL"));
+    return { base, hasOverride: false };
+  }
+
+  function resolveConfigKey(key) {
+    return key.toUpperCase();
+  }
+
   function applyConfig() {
     const support = getCfg("SUPPORT_EMAIL");
     const supportHref = support && support.includes("@");
 
     document.querySelectorAll("[data-config-href]").forEach((el) => {
-      const key = el.getAttribute("data-config-href");
-      let value = getCfg(key.toUpperCase());
-      if (key === "support_email") {
+      const key = resolveConfigKey(el.getAttribute("data-config-href"));
+      let value = getCfg(key);
+      if (key === "SUPPORT_EMAIL") {
         value = supportHref ? `mailto:${support}` : "";
       }
       if (!value || isPlaceholder(value)) {
@@ -46,8 +78,8 @@
     });
 
     document.querySelectorAll("[data-config-text]").forEach((el) => {
-      const key = el.getAttribute("data-config-text");
-      const value = getCfg(key.toUpperCase());
+      const key = resolveConfigKey(el.getAttribute("data-config-text"));
+      const value = getCfg(key);
       if (!value || isPlaceholder(value)) {
         el.textContent = "--";
         console.warn(`Missing config for ${key}`);
@@ -82,17 +114,21 @@
   }
 
   async function fetchCounts() {
-    const apiBase = normalizeUrl(getCfg("WORKER_API_BASE_URL"));
-    if (!apiBase || isPlaceholder(apiBase)) {
+    const { base: apiBase, hasOverride } = getApiBase();
+    if (!apiBase || (!hasOverride && isPlaceholder(apiBase))) {
+      document.querySelectorAll("[data-waitlist-count]").forEach((el) => (el.textContent = "—"));
+      document.querySelectorAll("[data-waitlist-today]").forEach((el) => (el.textContent = "—"));
+      document.querySelectorAll("[data-waitlist-week]").forEach((el) => (el.textContent = "—"));
       console.warn("WORKER_API_BASE_URL not set for waitlist counts");
       return;
     }
     try {
       const res = await fetch(`${apiBase}/api/waitlist/count`);
       const data = await res.json();
+      if (!data.ok) throw new Error(data.error || "Count error");
       const total = data.total_count || 0;
       const today = data.today_count || 0;
-      const byDay = Array.isArray(data.counts_by_day) ? data.counts_by_day : [];
+      const byDay = Array.isArray(data.counts_by_day_last_7) ? data.counts_by_day_last_7 : [];
       const week = byDay.reduce((sum, d) => sum + (d.count || 0), 0);
 
       document.querySelectorAll("[data-waitlist-count]").forEach((el) => (el.textContent = total));
@@ -104,14 +140,14 @@
   }
 
   function validateTelegram(username) {
-    const cleaned = username.replace(/^@/, "").trim();
+    const cleaned = String(username || "").replace(/^@/, "").trim();
     if (!cleaned) return null;
-    if (!/^[a-zA-Z0-9_]{5,32}$/.test(cleaned)) return null;
+    if (!/^[a-zA-Z0-9_]{3,32}$/.test(cleaned)) return null;
     return cleaned;
   }
 
   function getReferralLink(refCode) {
-    let base = normalizeUrl(getCfg("WEBSITE_BASE_URL")) || window.location.origin;
+    let base = normalizeUrl(getCfg("SITE_BASE_URL")) || window.location.origin;
     if (isPlaceholder(base)) {
       base = window.location.origin;
     }
@@ -121,18 +157,25 @@
   function setupWaitlistForm() {
     const form = document.getElementById("waitlist-form");
     if (!form) return;
-    const apiBase = normalizeUrl(getCfg("WORKER_API_BASE_URL"));
     const msg = document.getElementById("waitlist-message");
     const success = document.getElementById("waitlist-success");
     const refField = document.getElementById("ref");
+    const submitBtn = form.querySelector("button[type='submit']");
 
     const qs = new URLSearchParams(window.location.search);
     const ref = qs.get("ref");
     if (refField) refField.value = ref || "";
 
+    const { base: apiBase, hasOverride } = getApiBase();
+    const apiMissing = !apiBase || (!hasOverride && isPlaceholder(apiBase));
+    if (apiMissing && submitBtn) {
+      submitBtn.disabled = true;
+      msg.textContent = "Backend not configured. Set WORKER_API_BASE_URL or use ?api=...";
+    }
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      if (!apiBase || isPlaceholder(apiBase)) {
+      if (apiMissing) {
         msg.textContent = "Waitlist backend is not configured.";
         return;
       }
@@ -142,7 +185,7 @@
         msg.textContent = "Please enter a valid Telegram username.";
         return;
       }
-      const honeypot = form.hp ? form.hp.value : "";
+      const honeypot = form.honeypot ? form.honeypot.value : "";
       if (honeypot) {
         msg.textContent = "Submission blocked.";
         return;
@@ -153,7 +196,8 @@
         telegram_username: telegram,
         email: form.email.value || "",
         ref: form.ref.value || "",
-        hear_about: form.source.value || ""
+        heard_about: form.source.value || "",
+        honeypot: honeypot
       };
 
       try {
@@ -164,15 +208,15 @@
         });
         const data = await res.json();
         if (!res.ok || !data.ok) {
-          msg.textContent = data.message || "Unable to submit. Try again later.";
+          msg.textContent = data.error || "Unable to submit. Try again later.";
           return;
         }
 
         form.style.display = "none";
         if (success) success.style.display = "block";
 
-        const refCode = data.ref_code_assigned || data.ref_code || "";
-        const link = refCode ? getReferralLink(refCode) : "";
+        const refCode = data.assigned_ref || "";
+        const link = data.referral_link || (refCode ? getReferralLink(refCode) : "");
         const linkEl = document.querySelector("[data-ref-link]");
         if (linkEl) linkEl.textContent = link || "Your referral link will appear here.";
         const copyBtn = document.querySelector("[data-copy-ref]");
@@ -183,7 +227,10 @@
             setTimeout(() => (copyBtn.textContent = "Copy referral link"), 1200);
           });
         }
-        msg.textContent = data.duplicate ? "You are already on the waitlist." : "You are in.";
+        msg.textContent = data.already_joined ? "You are already on the waitlist." : "You are in.";
+
+        document.querySelectorAll("[data-waitlist-count]").forEach((el) => (el.textContent = data.total_count || 0));
+        document.querySelectorAll("[data-waitlist-today]").forEach((el) => (el.textContent = data.today_count || 0));
         fetchCounts();
       } catch (e) {
         msg.textContent = "Submission failed. Please try again.";

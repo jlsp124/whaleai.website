@@ -1,9 +1,9 @@
-﻿window.WHALEAI_CONFIG = {
-  WEBSITE_BASE_URL: "https://YOUR_GITHUB_PAGES_URL",
-  WORKER_API_BASE_URL: "https://YOUR_WORKER_URL",
-  TELEGRAM_URL: "https://t.me/YOUR_TELEGRAM",
-  DONATE_SOL_ADDRESS: "YOUR_SOL_ADDRESS",
-  SUPPORT_EMAIL: "support@YOUR_DOMAIN",
-  GITHUB_URL: "https://github.com/YOUR_REPO",
+window.WHALEAI_CONFIG = {
+  WORKER_API_BASE_URL: "https://whaleai-waitlist.jlsp124waitlist2026x7.workers.dev",
+  SITE_BASE_URL: "https://jlsp124.github.io/whaleai.website/",
+  SUPPORT_EMAIL: "oat-gopher-pretext@duck.com",
+  TELEGRAM_COMMUNITY_URL: "https://t.me/+sU0sGEm9AOc2NDcx",
+  DONATE_SOL_ADDRESS: "7pZvLkbusytg3VhEgRoLpkUBW1sPnhYy4KM2bJ2mhY9o",
+  GITHUB_URL: "https://github.com/jlsp124/Whale-AI",
   QR_IMAGE_BASE_URL: "https://api.qrserver.com/v1/create-qr-code/"
 };

@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -13,8 +13,10 @@
   <style>
     .admin-grid { display:grid; gap:18px; grid-template-columns: 1fr; }
     .admin-actions { display:flex; gap:12px; flex-wrap:wrap; }
-    .search-row { display:flex; gap:12px; flex-wrap:wrap; }
+    .search-row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
     .chart { width:100%; height:140px; background: rgba(255,255,255,0.02); border-radius: 12px; border:1px solid var(--border); }
+    .pager { display:flex; gap:10px; align-items:center; justify-content:flex-end; margin-top:12px; }
+    .pill-note { font-size: 12px; color: var(--muted); }
   </style>
 </head>
 <body>
@@ -45,7 +47,7 @@
         <div class="card">
           <div id="admin-login">
             <label class="eyebrow" for="admin-token">Admin token</label>
-            <input class="input" id="admin-token" placeholder="Paste ADMIN_TOKEN" />
+            <input class="input" id="admin-token" type="password" placeholder="Paste ADMIN_TOKEN" />
             <div class="admin-actions" style="margin-top:12px;">
               <button class="btn primary" id="save-token">Save token</button>
               <button class="btn ghost" id="clear-token">Clear</button>
@@ -59,14 +61,16 @@
           <div class="stats" style="margin:12px 0;">
             <div class="stat"><div class="value" id="stat-total">--</div><div class="label">Total</div></div>
             <div class="stat"><div class="value" id="stat-today">--</div><div class="label">Today</div></div>
-            <div class="stat"><div class="value" id="stat-refs">--</div><div class="label">Ref codes</div></div>
+            <div class="stat"><div class="value" id="stat-refs">--</div><div class="label">Top refs</div></div>
           </div>
+          <div class="pill-note" id="top-refs"></div>
           <canvas id="daily-chart" class="chart"></canvas>
         </div>
 
         <div class="card">
           <div class="search-row">
-            <input class="input" id="search" placeholder="Filter by username or ref" />
+            <input class="input" id="search" placeholder="Search username or email" />
+            <input class="input" id="filter-ref" placeholder="Filter by attribution ref" />
             <button class="btn ghost" id="refresh">Refresh</button>
             <button class="btn ghost" id="export">Export CSV</button>
           </div>
@@ -77,12 +81,18 @@
                   <th>Created</th>
                   <th>Telegram</th>
                   <th>Email</th>
-                  <th>Ref</th>
-                  <th>Ref Code</th>
+                  <th>Heard about</th>
+                  <th>Ref (attr)</th>
+                  <th>Assigned ref</th>
                 </tr>
               </thead>
               <tbody></tbody>
             </table>
+          </div>
+          <div class="pager">
+            <button class="btn ghost" id="prev-page">Prev</button>
+            <span class="pill-note" id="page-info">Page 1</span>
+            <button class="btn ghost" id="next-page">Next</button>
           </div>
         </div>
       </div>
@@ -93,19 +103,33 @@
   <script src="../script.js" defer></script>
   <script>
     const cfg = window.WHALEAI_CONFIG || {};
-    const apiBase = (cfg.WORKER_API_BASE_URL || '').replace(/\/$/, '');
-    const tokenKey = 'WHALEAI_ADMIN_TOKEN';
+    const tokenKey = "WHALEAI_ADMIN_TOKEN";
+    const pageSize = 50;
+    let currentPage = 1;
 
-    const statusEl = document.getElementById('admin-status');
-    const tokenInput = document.getElementById('admin-token');
-    const tbody = document.querySelector('#entries-table tbody');
+    function normalizeUrl(value) {
+      return String(value || "").replace(/\/$/, "");
+    }
+
+    function getApiBase() {
+      const qs = new URLSearchParams(window.location.search);
+      const override = normalizeUrl(qs.get("api") || "");
+      if (override) return override;
+      return normalizeUrl(cfg.WORKER_API_BASE_URL || "");
+    }
+
+    const apiBase = getApiBase();
+    const statusEl = document.getElementById("admin-status");
+    const tokenInput = document.getElementById("admin-token");
+    const tbody = document.querySelector("#entries-table tbody");
+    const pageInfo = document.getElementById("page-info");
 
     function setStatus(text) {
       statusEl.textContent = text;
     }
 
     function getToken() {
-      return sessionStorage.getItem(tokenKey) || '';
+      return sessionStorage.getItem(tokenKey) || "";
     }
 
     function setToken(val) {
@@ -117,69 +141,95 @@
     }
 
     async function api(path) {
-      if (!apiBase) throw new Error('WORKER_API_BASE_URL not set');
+      if (!apiBase || apiBase.includes("FILL_ME")) throw new Error("WORKER_API_BASE_URL not set");
       const res = await fetch(apiBase + path, {
         headers: {
-          'Authorization': 'Bearer ' + getToken()
+          "Authorization": "Bearer " + getToken()
         }
       });
-      if (!res.ok) throw new Error(await res.text());
-      return res;
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        const error = data.error || `HTTP ${res.status}`;
+        const err = new Error(error);
+        err.code = data.code || res.status;
+        throw err;
+      }
+      return data;
     }
 
-    function renderTable(rows, filter) {
-      tbody.innerHTML = '';
-      const term = (filter || '').toLowerCase();
-      rows.filter(r => {
-        if (!term) return true;
-        return String(r.telegram_username || '').toLowerCase().includes(term) || String(r.ref || '').toLowerCase().includes(term);
-      }).forEach(r => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${r.created_at || ''}</td><td>${r.telegram_username || ''}</td><td>${r.email || ''}</td><td>${r.ref || ''}</td><td>${r.ref_code || ''}</td>`;
+    function renderTable(rows) {
+      tbody.innerHTML = "";
+      rows.forEach((r) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.created_at || ""}</td>
+          <td>${r.telegram_username || ""}</td>
+          <td>${r.email || ""}</td>
+          <td>${r.heard_about || ""}</td>
+          <td>${r.ref || ""}</td>
+          <td>${r.assigned_ref || ""}</td>
+        `;
         tbody.appendChild(tr);
       });
     }
 
     function drawChart(series) {
-      const canvas = document.getElementById('daily-chart');
-      const ctx = canvas.getContext('2d');
+      const canvas = document.getElementById("daily-chart");
+      const ctx = canvas.getContext("2d");
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width * window.devicePixelRatio;
       canvas.height = rect.height * window.devicePixelRatio;
       ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
       ctx.clearRect(0, 0, rect.width, rect.height);
-      const max = Math.max(1, ...series.map(s => s.count));
+      const max = Math.max(1, ...series.map((s) => s.count));
       const barWidth = rect.width / series.length;
       series.forEach((s, i) => {
         const h = (s.count / max) * (rect.height - 20);
-        ctx.fillStyle = 'rgba(40,224,255,0.55)';
+        ctx.fillStyle = "rgba(40,224,255,0.55)";
         ctx.fillRect(i * barWidth + 6, rect.height - h - 10, barWidth - 12, h);
       });
     }
 
     async function loadStats() {
-      const res = await api('/api/admin/stats');
-      const data = await res.json();
-      document.getElementById('stat-total').textContent = data.total_count || 0;
-      document.getElementById('stat-today').textContent = data.today_count || 0;
-      document.getElementById('stat-refs').textContent = (data.top_refs || []).length;
-      drawChart(data.daily_counts || []);
+      const data = await api("/api/admin/stats");
+      document.getElementById("stat-total").textContent = data.total_count || 0;
+      document.getElementById("stat-today").textContent = data.today_count || 0;
+      document.getElementById("stat-refs").textContent = (data.top_refs || []).length;
+      const topRefLine = (data.top_refs || []).map((r) => `${r.ref}:${r.count}`).join(" · ");
+      document.getElementById("top-refs").textContent = topRefLine || "No attribution yet.";
+      drawChart(data.counts_by_day_last_30 || []);
     }
 
     async function loadEntries() {
-      const res = await api('/api/admin/entries?limit=200');
-      const data = await res.json();
-      renderTable(data.entries || [], document.getElementById('search').value);
+      const q = document.getElementById("search").value.trim();
+      const ref = document.getElementById("filter-ref").value.trim();
+      const qs = new URLSearchParams({
+        page: String(currentPage),
+        page_size: String(pageSize),
+        q,
+        ref
+      });
+      const data = await api(`/api/admin/entries?${qs.toString()}`);
+      renderTable(data.items || []);
+      pageInfo.textContent = `Page ${data.page || currentPage} of ${Math.max(1, Math.ceil((data.total || 0) / pageSize))}`;
     }
 
     async function exportCsv() {
-      const res = await api('/api/admin/export.csv');
+      if (!apiBase || apiBase.includes("FILL_ME")) throw new Error("WORKER_API_BASE_URL not set");
+      const res = await fetch(`${apiBase}/api/admin/export.csv`, {
+        headers: {
+          "Authorization": "Bearer " + getToken()
+        }
+      });
+      if (!res.ok) {
+        throw new Error("Export failed");
+      }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = 'waitlist_export.csv';
+      a.download = "waitlist_export.csv";
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -189,32 +239,69 @@
     async function refreshAll() {
       try {
         if (!getToken()) {
-          setStatus('Set ADMIN_TOKEN to continue.');
+          setStatus("Set ADMIN_TOKEN to continue.");
           return;
         }
-        setStatus('Loading...');
+        if (!apiBase || apiBase.includes("FILL_ME")) {
+          setStatus("Backend not configured. Set WORKER_API_BASE_URL or use ?api=...");
+          return;
+        }
+        setStatus("Loading...");
         await loadStats();
         await loadEntries();
-        setStatus('Loaded.');
+        setStatus("Loaded.");
       } catch (e) {
-        setStatus('Error: ' + (e.message || e));
+        if (String(e.message || "").includes("Unauthorized")) {
+          setStatus("Invalid ADMIN_TOKEN.");
+        } else {
+          setStatus("Error: " + (e.message || e));
+        }
       }
     }
 
-    document.getElementById('save-token').addEventListener('click', () => {
+    document.getElementById("save-token").addEventListener("click", () => {
       setToken(tokenInput.value.trim());
       refreshAll();
     });
 
-    document.getElementById('clear-token').addEventListener('click', () => {
+    document.getElementById("clear-token").addEventListener("click", () => {
       clearToken();
-      tokenInput.value = '';
-      setStatus('Token cleared.');
+      tokenInput.value = "";
+      setStatus("Token cleared.");
     });
 
-    document.getElementById('refresh').addEventListener('click', refreshAll);
-    document.getElementById('export').addEventListener('click', exportCsv);
-    document.getElementById('search').addEventListener('input', () => loadEntries());
+    document.getElementById("refresh").addEventListener("click", () => {
+      currentPage = 1;
+      refreshAll();
+    });
+
+    document.getElementById("export").addEventListener("click", async () => {
+      try {
+        await exportCsv();
+      } catch (e) {
+        setStatus("Error: " + (e.message || e));
+      }
+    });
+
+    document.getElementById("search").addEventListener("input", () => {
+      currentPage = 1;
+      loadEntries();
+    });
+
+    document.getElementById("filter-ref").addEventListener("input", () => {
+      currentPage = 1;
+      loadEntries();
+    });
+
+    document.getElementById("prev-page").addEventListener("click", () => {
+      currentPage = Math.max(1, currentPage - 1);
+      loadEntries();
+    });
+
+    document.getElementById("next-page").addEventListener("click", () => {
+      currentPage += 1;
+      loadEntries();
+    });
 
     tokenInput.value = getToken();
     refreshAll();
