@@ -171,6 +171,7 @@
   function setupWaitlistForm() {
     const form = document.getElementById("waitlist-form");
     if (!form) return;
+    const formCard = document.getElementById("waitlist-form-card");
     const msg = document.getElementById("waitlist-message");
     const success = document.getElementById("waitlist-success");
     const refField = document.getElementById("ref");
@@ -227,6 +228,7 @@
         }
 
         form.style.display = "none";
+        if (formCard) formCard.style.display = "none";
         if (success) success.style.display = "block";
 
         const refCode = data.assigned_ref || "";
@@ -289,13 +291,13 @@
       const amountStr = clean && !Number.isNaN(clean) ? clean.toString() : "";
       const { deepLink, webLink } = buildUrls(amountStr);
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || "");
-      linkEl.setAttribute("href", isMobile ? deepLink : webLink);
-      linkEl.setAttribute("target", isMobile ? "_self" : "_blank");
+      linkEl.setAttribute("href", deepLink);
+      linkEl.setAttribute("target", "_self");
       if (urlEl) urlEl.textContent = webLink;
       if (helpEl) {
         helpEl.textContent = isMobile
           ? "Opens directly in wallet on mobile."
-          : "On desktop, scan the QR or copy the payment link.";
+          : "On desktop, opens your wallet extension if installed. Otherwise use the QR or copy the payment link.";
       }
       if (copyLinkBtn) {
         copyLinkBtn.onclick = async () => {
