@@ -23,8 +23,8 @@
   <header class="nav" data-nav>
     <div class="container nav-inner">
       <a class="brand" href="../index.html">
-        <img src="../assets/whale.svg" alt="Whale AI" />
-        <span>Whale AI Admin</span>
+        <img src="../assets/whaleaifulllogo.png" alt="Whale AI" class="brand-logo" />
+        <span class="sr-only">Whale AI</span>
       </a>
       <nav class="nav-links">
         <a href="../index.html">Site</a>
@@ -196,7 +196,7 @@
       document.getElementById("stat-total").textContent = data.total_count || 0;
       document.getElementById("stat-today").textContent = data.today_count || 0;
       document.getElementById("stat-refs").textContent = (data.top_refs || []).length;
-      const topRefLine = (data.top_refs || []).map((r) => `${r.ref}:${r.count}`).join(" · ");
+      const topRefLine = (data.top_refs || []).map((r) => `${r.ref}:${r.count}`).join(" ï¿½ ");
       document.getElementById("top-refs").textContent = topRefLine || "No attribution yet.";
       drawChart(data.counts_by_day_last_30 || []);
     }
