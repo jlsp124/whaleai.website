@@ -130,9 +130,9 @@
   async function fetchCounts() {
     const { base: apiBase, hasOverride } = getApiBase();
     if (!apiBase || (!hasOverride && isPlaceholder(apiBase))) {
-      document.querySelectorAll("[data-waitlist-count]").forEach((el) => (el.textContent = "—"));
-      document.querySelectorAll("[data-waitlist-today]").forEach((el) => (el.textContent = "—"));
-      document.querySelectorAll("[data-waitlist-week]").forEach((el) => (el.textContent = "—"));
+      document.querySelectorAll("[data-waitlist-count]").forEach((el) => (el.textContent = "ï¿½"));
+      document.querySelectorAll("[data-waitlist-today]").forEach((el) => (el.textContent = "ï¿½"));
+      document.querySelectorAll("[data-waitlist-week]").forEach((el) => (el.textContent = "ï¿½"));
       console.warn("WORKER_API_BASE_URL not set for waitlist counts");
       return;
     }
@@ -233,15 +233,16 @@
 
         const refCode = data.assigned_ref || "";
         const link = data.referral_link || (refCode ? getReferralLink(refCode) : "");
-        const linkEl = document.querySelector("[data-ref-link]");
-        if (linkEl) linkEl.textContent = link || "Your referral link will appear here.";
         const copyBtn = document.querySelector("[data-copy-ref]");
-        if (copyBtn && link) {
-          copyBtn.addEventListener("click", async () => {
-            await navigator.clipboard.writeText(link);
+        if (copyBtn) {
+          copyBtn.dataset.refLink = link || "";
+          copyBtn.onclick = async () => {
+            const toCopy = copyBtn.dataset.refLink;
+            if (!toCopy) return;
+            await navigator.clipboard.writeText(toCopy);
             copyBtn.textContent = "Copied";
             setTimeout(() => (copyBtn.textContent = "Copy referral link"), 1200);
-          });
+          };
         }
         msg.textContent = data.already_joined ? "You are already on the waitlist." : "You are in.";
 
@@ -259,7 +260,6 @@
     const linkEl = document.querySelector("[data-donate-link]");
     const urlEl = document.querySelector("[data-donate-url]");
     const copyLinkBtn = document.querySelector("[data-copy-paylink]");
-    const helpEl = document.querySelector("[data-donate-help]");
     const qrEl = document.getElementById("donate-qr");
     if (!addressEl || !linkEl) return;
 
@@ -275,33 +275,37 @@
     const amountButtons = document.querySelectorAll("[data-donate-amount]");
     const customInput = document.getElementById("donate-custom");
 
-    function buildUrls(amount) {
+    function buildPayLink(amount) {
       const label = encodeURIComponent("Whale AI");
       const message = encodeURIComponent("Support Whale AI development");
       const amt = amount ? `amount=${amount}` : "";
       const qs = [amt, `label=${label}`, `message=${message}`].filter(Boolean).join("&");
-      const deepLink = `solana:${address}?${qs}`;
-      const webLink = `https://solana.com/pay/${address}${qs ? `?${qs}` : ""}`;
-      return { deepLink, webLink };
+      return `solana:${address}?${qs}`;
     }
 
     function update(amount) {
       const value = amount || (customInput ? customInput.value : "");
       const clean = value ? Number(value) : "";
       const amountStr = clean && !Number.isNaN(clean) ? clean.toString() : "";
-      const { deepLink, webLink } = buildUrls(amountStr);
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || "");
-      linkEl.setAttribute("href", deepLink);
+      const payLink = buildPayLink(amountStr);
+
+      linkEl.setAttribute("href", payLink);
       linkEl.setAttribute("target", "_self");
-      if (urlEl) urlEl.textContent = webLink;
-      if (helpEl) {
-        helpEl.textContent = isMobile
-          ? "Opens directly in wallet on mobile."
-          : "On desktop, opens your wallet extension if installed. Otherwise use the QR or copy the payment link.";
+      linkEl.onclick = (event) => {
+        event.preventDefault();
+        window.location.href = payLink;
+      };
+
+      if (urlEl) {
+        urlEl.textContent = payLink;
+        if (urlEl.tagName && urlEl.tagName.toLowerCase() === "a") {
+          urlEl.setAttribute("href", payLink);
+          urlEl.setAttribute("target", "_self");
+        }
       }
       if (copyLinkBtn) {
         copyLinkBtn.onclick = async () => {
-          await navigator.clipboard.writeText(webLink);
+          await navigator.clipboard.writeText(payLink);
           copyLinkBtn.textContent = "Copied";
           setTimeout(() => (copyLinkBtn.textContent = "Copy payment link"), 1200);
         };
@@ -313,7 +317,7 @@
           qrEl.style.display = "none";
           return;
         }
-        const qrUrl = `${qrBase}?size=220x220&data=${encodeURIComponent(webLink)}`;
+        const qrUrl = `${qrBase}?size=220x220&data=${encodeURIComponent(payLink)}`;
         qrEl.setAttribute("src", qrUrl);
       }
     }
